@@ -1,15 +1,25 @@
-const express = require('express');
-const { resolve } = require('path');
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const userRoutes = require("./routes"); // Import user routes
 
-const app = express();
-const port = 3010;
+dotenv.config();
 
-app.use(express.static('static'));
+const app = express()
 
-app.get('/', (req, res) => {
-  res.sendFile(resolve(__dirname, 'pages/index.html'));
-});
+app.use(express.json()); 
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+mongoose
+    .connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => console.log("MongoDB Connected..."))
+    .catch((err) => console.error("MongoDB Connection Failed:", err));
+
+// Use Routes
+app.use("/api/users", userRoutes);
+
+const PORT = 3100;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
